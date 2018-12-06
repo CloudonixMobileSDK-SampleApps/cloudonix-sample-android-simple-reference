@@ -1,0 +1,12 @@
+*.iml
+gradle/
+.gradle
+.idea/
+.DS_Store
+.directory
+local.properties
+build/
+captures/
+.externalNativeBuild
+app/src/main/res/raw/cloudonix_license_key.lic
+git_init.sh

@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">SimpleCallExample</string>
+    <string name="title_activity_simple_button">Simple Button Example</string>
+    <string name="connected">CONNECTED</string>
+</resources>

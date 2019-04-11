@@ -83,8 +83,9 @@ public class VoipImplClient implements IVoIPObserver {
     @Override
     public void onSipStarted() {
         Log.d(TAG, "Sip is Started");
-        cxClient.registerAccount();
+        // cxClient.registerAccount();
         if (Objects.nonNull(activityEvents)) {
+			activityEvents.onConnectState(true);
             activityEvents.onVoIPStart();
         }
     }

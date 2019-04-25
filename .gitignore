@@ -8,5 +8,4 @@ local.properties
 build/
 captures/
 .externalNativeBuild
-app/src/main/res/raw/cloudonix_license_key.lic
 git_init.sh

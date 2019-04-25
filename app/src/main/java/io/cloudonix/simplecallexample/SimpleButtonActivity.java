@@ -14,6 +14,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 public class SimpleButtonActivity extends AppCompatActivity {
+
     private static final String TAG = "SimpleButtonActivity";
     private int mStreamID;
     private volatile boolean isActiveCall = false;

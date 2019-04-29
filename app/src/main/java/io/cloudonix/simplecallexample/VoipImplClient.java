@@ -217,9 +217,6 @@ public class VoipImplClient implements IVoIPObserver {
 
     public boolean dial(String number) {
         Log.d(TAG, "dial: " + number);
-        if (!cxClient.isRegistered()) {
-            return false;
-        }
         cxClient.dial(number);
         return false;
     }

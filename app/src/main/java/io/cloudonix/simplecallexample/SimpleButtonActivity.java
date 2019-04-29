@@ -116,7 +116,7 @@ public class SimpleButtonActivity extends AppCompatActivity {
     private SimpleActivityEvents mCallbacksListener = new SimpleActivityEvents() {
         @Override
         public void onVoIPStart() {
-            knepl.setClickable(false);
+            knepl.setClickable(true);
         }
 
         @Override

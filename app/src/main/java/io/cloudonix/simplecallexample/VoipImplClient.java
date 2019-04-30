@@ -85,29 +85,6 @@ public class VoipImplClient implements IVoIPObserver {
         cloudonixClient.shutdown();
     }
 
-    public boolean dial(String number) {
-        Log.d(TAG, "dial: " + number);
-        if (!cloudonixClient.isRegistered()) {
-            return false;
-        }
-        cloudonixClient.dial(number);
-        return false;
-    }
-
-    public void hangup() {
-        cloudonixClient.hangup(callKey);
-    }
-
-    public void askRecordAudioPermissions(Activity activity) {
-        if (activity.checkCallingOrSelfPermission(Manifest.permission.RECORD_AUDIO)
-                != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(activity, "Permission " + Manifest.permission.RECORD_AUDIO
-                            + " is not granted. Please accept it for the app to work correctly.",
-                    Toast.LENGTH_SHORT).show();
-            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.RECORD_AUDIO}, 100);
-        }
-    }
-
     public void setCallbacksListener(SimpleActivityEvents callbacksListener) {
         activityEvents = callbacksListener;
     }
@@ -249,6 +226,29 @@ public class VoipImplClient implements IVoIPObserver {
     @Override
     public void onNATTypeDetected(NATType natType) {
         Log.d(TAG, "onNATTypeDetected " + natType);
+    }
+
+    public boolean dial(String number) {
+        Log.d(TAG, "dial: " + number);
+        if (!cloudonixClient.isRegistered()) {
+            return false;
+        }
+        cloudonixClient.dial(number);
+        return false;
+    }
+
+    public void hangup() {
+        cloudonixClient.hangup(callKey);
+    }
+
+    public void askRecordAudioPermissions(Activity activity) {
+        if (activity.checkCallingOrSelfPermission(Manifest.permission.RECORD_AUDIO)
+                != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(activity, "Permission " + Manifest.permission.RECORD_AUDIO
+                            + " is not granted. Please accept it for the app to work correctly.",
+                    Toast.LENGTH_SHORT).show();
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.RECORD_AUDIO}, 100);
+        }
     }
 
 }

@@ -229,6 +229,7 @@ public class VoipImplClient implements IVoIPObserver {
     }
 
     public boolean dial(String number) {
+        Log.d(TAG, "dial: " + number);
         cloudonixClient.dial(number);
         return false;
     }

@@ -229,10 +229,6 @@ public class VoipImplClient implements IVoIPObserver {
     }
 
     public boolean dial(String number) {
-        Log.d(TAG, "dial: " + number);
-        if (!cloudonixClient.isRegistered()) {
-            return false;
-        }
         cloudonixClient.dial(number);
         return false;
     }

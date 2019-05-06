@@ -3,7 +3,6 @@ package io.cloudonix.simplecallexample;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
@@ -26,20 +25,20 @@ public class VoipImplClient implements IVoIPObserver {
 
     private String callKey = null;
     private SimpleActivityEvents activityEvents;
-    private CloudonixSDKClient cloudonixClient;
+    private CloudonixSDKClient cxClient;
 
     public VoipImplClient(Context ctx) {
         String license = licenseToString(ctx);
-        cloudonixClient = CloudonixSDKClient.getInstance(license);
-        cloudonixClient.addEventsListener(this);
-        cloudonixClient.setLogLevel(SDKLogger.LOG_LEVEL_ALL);
-        if (!cloudonixClient.checkBinder()) {
-            cloudonixClient.bind(ctx); // will cause onSipStarted to be call
+        cxClient = CloudonixSDKClient.getInstance(license);
+        cxClient.addEventsListener(this);
+        cxClient.setLogLevel(SDKLogger.LOG_LEVEL_ALL);
+        if (!cxClient.checkBinder()) {
+            cxClient.bind(ctx); // will cause onSipStarted to be call
 
 //            Show notification during active call
 //            Intent will be processed when user clicks on notification
 //            Intent intent = new Intent(ctx, SimpleButtonActivity.class);
-//            cloudonixClient.setNotificationResources(intent, R.mipmap.ic_launcher, "Title",
+//            cxClient.setNotificationResources(intent, R.mipmap.ic_launcher, "Title",
 //                    "SDK is running and has an active call");
         }
     }
@@ -63,8 +62,8 @@ public class VoipImplClient implements IVoIPObserver {
             return;
         }
 
-        cloudonixClient.setConfig(ConfigurationKey.USER_AGENT, "MyApp/1.0");
-        cloudonixClient.setConfiguration(new RegistrationData() {{
+        cxClient.setConfig(ConfigurationKey.USER_AGENT, "MyApp/1.0");
+        cxClient.setConfiguration(new RegistrationData() {{
             setServerUrl("my-dns-or-ip.server.io");
             setPort(5060);
             setTransportType(TRANSPORT_TYPE_UDP);
@@ -82,7 +81,7 @@ public class VoipImplClient implements IVoIPObserver {
     }
 
     public void shutdown() {
-        cloudonixClient.shutdown();
+        cxClient.shutdown();
     }
 
     public void setCallbacksListener(SimpleActivityEvents callbacksListener) {
@@ -96,7 +95,7 @@ public class VoipImplClient implements IVoIPObserver {
     @Override
     public void onSipStarted() {
         Log.d(TAG, "Sip is Started");
-        cloudonixClient.registerAccount();
+        cxClient.registerAccount();
         if (activityEvents != null) {
 			activityEvents.onConnectState(true);
             activityEvents.onVoIPStart();
@@ -230,12 +229,12 @@ public class VoipImplClient implements IVoIPObserver {
 
     public boolean dial(String number) {
         Log.d(TAG, "dial: " + number);
-        cloudonixClient.dial(number);
+        cxClient.dial(number);
         return false;
     }
 
     public void hangup() {
-        cloudonixClient.hangup(callKey);
+        cxClient.hangup(callKey);
     }
 
     public void askRecordAudioPermissions(Activity activity) {

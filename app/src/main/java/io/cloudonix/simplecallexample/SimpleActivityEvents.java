@@ -1,11 +1,12 @@
 package io.cloudonix.simplecallexample;
 
 interface SimpleActivityEvents {
+
     void onVoIPStart();
 
     void onVoIPError();
 
-    void onConnectState(boolean connected);
+    void onConnectState(boolean isConnected);
 
     void onCallRinging();
 
@@ -14,4 +15,5 @@ interface SimpleActivityEvents {
     void onCallConnected();
 
     void onCallDisconnected();
+
 }

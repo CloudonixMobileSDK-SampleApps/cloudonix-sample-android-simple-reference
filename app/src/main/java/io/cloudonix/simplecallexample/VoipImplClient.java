@@ -11,37 +11,48 @@ import android.widget.Toast;
 import net.greenfieldtech.cloudonixsdk.api.interfaces.IVoIPObserver;
 import net.greenfieldtech.cloudonixsdk.api.models.RegistrationData;
 import net.greenfieldtech.cloudonixsdk.appinterface.CloudonixSDKClient;
+import net.greenfieldtech.cloudonixsdk.utils.CryptUtils;
 import net.greenfieldtech.cloudonixsdk.utils.SDKLogger;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
-import static net.greenfieldtech.cloudonixsdk.api.models.RegistrationData.TransportType.TRANSPORT_TYPE_TLS;
 import static net.greenfieldtech.cloudonixsdk.api.models.RegistrationData.TransportType.TRANSPORT_TYPE_UDP;
 
 public class VoipImplClient implements IVoIPObserver {
-    private static final String TAG = "VoipImplClient";
+
+    private static final String TAG = VoipImplClient.class.getSimpleName();
+
     private String callKey = null;
     private SimpleActivityEvents activityEvents;
     private CloudonixSDKClient cxClient;
 
     public VoipImplClient(Context ctx) {
-        InputStream lic = ctx.getResources().openRawResource(R.raw.cloudonix_license_key);
-        try (BufferedReader buffer = new BufferedReader(new InputStreamReader(lic))) {
-            cxClient = CloudonixSDKClient.getInstance(buffer.lines().collect(Collectors.joining("\n")));
-            cxClient.addEventsListener(this);
-            cxClient.setLogLevel(SDKLogger.LOG_LEVEL_ALL);
-            if (!cxClient.checkBinder()) {
-                cxClient.bind(ctx); // will cause onSipStarted to be call
-            }
+        String license = licenseToString(ctx);
+        cxClient = CloudonixSDKClient.getInstance(license);
+        cxClient.addEventsListener(this);
+        cxClient.setLogLevel(SDKLogger.LOG_LEVEL_ALL);
+        if (!cxClient.checkBinder()) {
+            cxClient.bind(ctx); // will cause onSipStarted to be call
+
+//            Show notification during active call
+//            Intent will be processed when user clicks on notification
+//            Intent intent = new Intent(ctx, SimpleButtonActivity.class);
+//            cxClient.setNotificationResources(intent, R.mipmap.ic_launcher, "Title",
+//                    "SDK is running and has an active call");
+        }
+    }
+
+    // converts license file to String
+    private static String licenseToString(Context context) {
+        InputStream input = context.getResources().openRawResource(R.raw.cloudonix_license_key);
+        try {
+            byte[] inputArray = CryptUtils.convertStreamToByteArray(input);
+            return new String(inputArray);
         } catch (IOException e) {
             e.printStackTrace();
-            return;
         }
+        return "";
     }
 
     @Override
@@ -50,6 +61,7 @@ public class VoipImplClient implements IVoIPObserver {
             Log.e(TAG, "License error: " + description);
             return;
         }
+
         cxClient.setConfig(ConfigurationKey.USER_AGENT, "MyApp/1.0");
         cxClient.setConfiguration(new RegistrationData() {{
             setServerUrl("my-dns-or-ip.server.io");
@@ -72,7 +84,7 @@ public class VoipImplClient implements IVoIPObserver {
         cxClient.shutdown();
     }
 
-    public void addCallbacksListener(SimpleActivityEvents callbacksListener) {
+    public void setCallbacksListener(SimpleActivityEvents callbacksListener) {
         activityEvents = callbacksListener;
     }
 
@@ -83,8 +95,8 @@ public class VoipImplClient implements IVoIPObserver {
     @Override
     public void onSipStarted() {
         Log.d(TAG, "Sip is Started");
-        // cxClient.registerAccount();
-        if (Objects.nonNull(activityEvents)) {
+        cxClient.registerAccount();
+        if (activityEvents != null) {
 			activityEvents.onConnectState(true);
             activityEvents.onVoIPStart();
         }
@@ -101,19 +113,19 @@ public class VoipImplClient implements IVoIPObserver {
         switch (result) {
             case REGISTRATION_SUCCESS:
                 Log.d(TAG, "registered with expire: " + expiry);
-                if (Objects.nonNull(activityEvents)) {
+                if (activityEvents != null) {
                     activityEvents.onConnectState(true);
                 }
                 break;
             case REGISTRATION_ERROR_CREDENTIALS:
                 Log.d(TAG, "auth error, expire: " + expiry);
-                if (Objects.nonNull(activityEvents)) {
+                if (activityEvents != null) {
                     activityEvents.onConnectState(false);
                 }
                 break;
             case REGISTRATION_UNREGISTERED:
                 Log.d(TAG, "No longer registered, expire: " + expiry);
-                if (Objects.nonNull(activityEvents)) {
+                if (activityEvents != null) {
                     activityEvents.onConnectState(false);
                 }
                 break;
@@ -135,13 +147,13 @@ public class VoipImplClient implements IVoIPObserver {
                 break;
             case CALL_STATE_RINGING:
                 Log.d(TAG, "onRinging: " + key + " Number: " + contactUrl);
-                if (Objects.nonNull(activityEvents)) {
+                if (activityEvents != null) {
                     activityEvents.onCallRinging();
                 }
                 break;
             case CALL_STATE_EARLY:
                 Log.d(TAG, "onEarlyMedia: " + key + " Number: " + contactUrl);
-                if (Objects.nonNull(activityEvents)) {
+                if (activityEvents != null) {
                     activityEvents.onCallEarlyMedia();
                 }
                 break;
@@ -150,7 +162,7 @@ public class VoipImplClient implements IVoIPObserver {
                 break;
             case CALL_STATE_CONFIRMED:
                 Log.d(TAG, "onConfirmed: " + key + " Number: " + contactUrl);
-                if (Objects.nonNull(activityEvents)) {
+                if (activityEvents != null) {
                     activityEvents.onCallConnected();
                 }
                 break;
@@ -161,7 +173,7 @@ public class VoipImplClient implements IVoIPObserver {
             case CALL_STATE_DISCONNECTED:
                 Log.d(TAG, "onHangup: " + callState + ", " + key + " Number: " + contactUrl);
                 callKey = null;
-                if (Objects.nonNull(activityEvents)) {
+                if (activityEvents != null) {
                     activityEvents.onCallDisconnected();
                 }
                 break;
@@ -177,7 +189,7 @@ public class VoipImplClient implements IVoIPObserver {
 
     @Override
     public void onSipStopped() {
-        Log.d(TAG, "Sip is Failed after Start");
+        Log.d(TAG, "onSipStopped");
     }
 
     @Override
@@ -225,15 +237,14 @@ public class VoipImplClient implements IVoIPObserver {
         cxClient.hangup(callKey);
     }
 
-    public void askRecordAudioPermissions(Activity activity, boolean isFirstTime) {
+    public void askRecordAudioPermissions(Activity activity) {
         if (activity.checkCallingOrSelfPermission(Manifest.permission.RECORD_AUDIO)
                 != PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(activity, "Permission " + Manifest.permission.RECORD_AUDIO
                             + " is not granted. Please accept it for the app to work correctly.",
                     Toast.LENGTH_SHORT).show();
             ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.RECORD_AUDIO}, 100);
-            return;
         }
     }
-}
 
+}

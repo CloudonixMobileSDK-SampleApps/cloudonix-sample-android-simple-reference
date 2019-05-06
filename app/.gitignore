@@ -1,1 +1,3 @@
 build/
+src/main/res/raw/cloudonix_license_key.lic
+libs/CloudonixSDK.aar

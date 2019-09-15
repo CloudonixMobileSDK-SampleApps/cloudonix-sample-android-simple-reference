@@ -10,6 +10,8 @@ import android.widget.Toast;
 
 import net.greenfieldtech.cloudonixsdk.api.interfaces.IVoIPObserver;
 import net.greenfieldtech.cloudonixsdk.api.models.RegistrationData;
+import net.greenfieldtech.cloudonixsdk.api.models.SDKConstants;
+import net.greenfieldtech.cloudonixsdk.api.models.StatisticsData;
 import net.greenfieldtech.cloudonixsdk.appinterface.CloudonixSDKClient;
 import net.greenfieldtech.cloudonixsdk.utils.SDKLogger;
 
@@ -185,7 +187,7 @@ public class VoipImplClient implements IVoIPObserver {
     }
 
     @Override
-    public void onAudioRouteChange(AudioRoute audioRoute) {
+    public void onAudioRouteChange(SDKConstants.AudioRoute audioRoute) {
 
     }
 
@@ -237,5 +239,40 @@ public class VoipImplClient implements IVoIPObserver {
             return;
         }
     }
+
+    public void statistic(){
+        StatisticsData  statisticdate = cxClient.getStatistics(callKey);
+        if(statisticdate!= null)
+        {
+            Log.d(TAG, "Call Statistics: ");
+            Log.d(TAG, "MOS: " + statisticdate.MOS);
+            Log.d(TAG, "audioBitRate: " + statisticdate.audioBitRate);
+            Log.d(TAG, "averageJitterMs: " + statisticdate.averageJitterMs);
+            Log.d(TAG, "bytesReceived: " + statisticdate.bytesReceived);
+            Log.d(TAG, "bytesSent: " + statisticdate.bytesSent);
+            Log.d(TAG, "codecName: " + statisticdate.codecName);
+            Log.d(TAG, "comulativeLost: " + statisticdate.comulativeLost);
+            Log.d(TAG, "discardedPackets: " + statisticdate.discardedPackets);
+            Log.d(TAG, "duration: " + statisticdate.duration);
+            Log.d(TAG, "extendedMax: " + statisticdate.extendedMax);
+            Log.d(TAG, "fractionLost: " + statisticdate.fractionLost);
+            Log.d(TAG, "jitterSamples: " + statisticdate.jitterSamples);
+            Log.d(TAG, "last_SR_timestamp: " + statisticdate.last_SR_timestamp);
+            Log.d(TAG, "maxJitterMs: " + statisticdate.maxJitterMs);
+            Log.d(TAG, "packetsReceived: " + statisticdate.packetsReceived);
+            Log.d(TAG, "packetsSent: " + statisticdate.packetsSent);
+            Log.d(TAG, "remoteFractionLoss: " + statisticdate.remoteFractionLoss);
+            Log.d(TAG, "result: " + statisticdate.result);
+            Log.d(TAG, "rttMs: " + statisticdate.rttMs);
+
+
+
+
+
+        }
+   }
+
+
+
 }
 

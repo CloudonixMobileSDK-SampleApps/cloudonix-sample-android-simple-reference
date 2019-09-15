@@ -13,6 +13,9 @@ import android.view.animation.Animation;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class SimpleButtonActivity extends AppCompatActivity {
     private static final String TAG = "SimpleButtonActivity";
     private int mStreamID;
@@ -22,6 +25,10 @@ public class SimpleButtonActivity extends AppCompatActivity {
     private ImageButton knepl; //Call button.
     private VoipImplClient klyent; //VoIP client instance.
     private TextView label; //"CONNECTED" label, becomes visible only when the call is connected.
+    private int delay=10000;// Statistics will start after 10 seconds.
+    private int period = 3000; //Statistics will show every 3 seconds.
+
+    private Timer timer = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +55,15 @@ public class SimpleButtonActivity extends AppCompatActivity {
                     //Dial specific number or application
                     klyent.dial("call-the-number-or-application");
                     knepl.setImageResource(R.drawable.btn_hangup_selector);
+                    timer = new Timer();
+                    if(timer!=null) {
+                        timer.schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                klyent.statistic();
+                            }
+                        }, delay, period);
+                    }
                 }
             }
         });
@@ -147,6 +163,9 @@ public class SimpleButtonActivity extends AppCompatActivity {
         }
         @Override
         public void onCallDisconnected(){
+            if(timer != null) {
+            timer.cancel();
+            timer=null; }
             stopRingingTone();
             knepl.setImageResource(R.drawable.btn_call_selector);
             isActiveCall = false;
